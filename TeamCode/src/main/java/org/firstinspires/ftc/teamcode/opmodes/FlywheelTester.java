@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Biobuzz Flywheel Test")
-public class FlywheelTestBiobuzz extends LinearOpMode {
+@TeleOp(name = "Flywheel Tester")
+public class FlywheelTester extends LinearOpMode {
     private DcMotorEx flywheel;
     private DcMotor bottomCollection;
     private DcMotor topCollection;
