@@ -30,17 +30,12 @@ git push -u origin your-branch-name
 
 Once your branch has been pushed, open a pull request (PR) on GitHub.
 
-**Important: Make sure your pull request targets the `main` branch of our team's repository.**
-
-This project is based on the upstream
-[FIRST Tech Challenge FtcRobotController repository](https://github.com/FIRST-Tech-Challenge/FtcRobotController).
-However, **all pull requests for our team project must be submitted to the [FTC 7129 Robo Raiders BioBuzz repository](https://github.com/FTC-7129-Robo-Raiders/biobuzz)**,
-not the upstream repository.
+**Important: Make sure your pull request targets the `main` branch of our team's repository
+unless you have reason to put a PR into another target branch.**
 
 Before submitting your PR, verify the following:
 
 - [ ] Your changes are on your own branch.
 - [ ] Your branch has been pushed to GitHub.
-- [ ] The base repository for the PR is `FTC-7129-Robo-Raiders/biobuzz`.
 - [ ] The base branch for the PR is `main`.
 - [ ] Your PR includes a clear description of the changes.
