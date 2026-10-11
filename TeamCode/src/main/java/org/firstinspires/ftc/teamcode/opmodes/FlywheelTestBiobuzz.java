@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
-import java.time.Duration;
-import java.time.Instant;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Biobuzz Flywheel Test")
 public class FlywheelTestBiobuzz extends LinearOpMode {
@@ -18,8 +16,7 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
     private double desiredFlywheelVelocity;
     // Used to avoid incrementing/decrementing too quickly when multiple up/down keypresses
     // are read within a loop
-    private Instant lastVelocityChange;
-    private final Duration debounceTime = Duration.ofMillis(500);
+    private final ElapsedTime timeSinceVelocityChange = new ElapsedTime();
 
     /**
      * Initialize our subsystems; this should be called once at robot startup
@@ -57,8 +54,8 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
      * @return True if a flywheel change is allowed, false otherwise
      */
     private boolean flywheelChangeAllowed() {
-        return lastVelocityChange == null ||
-                Duration.between(lastVelocityChange, Instant.now()).compareTo(debounceTime) >= 0;
+        // There should be a 500 millisecond buffer between flywheel adjustments
+        return timeSinceVelocityChange.milliseconds() > 500;
     }
 
     /**
@@ -69,7 +66,7 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
      */
     private void adjustDesiredVelocity(double amount) {
         desiredFlywheelVelocity += amount;
-        lastVelocityChange = Instant.now();
+        timeSinceVelocityChange.reset();
     }
 
     /**
@@ -100,7 +97,13 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
             adjustDesiredVelocity(50);
         }
         flywheel.setVelocity(desiredFlywheelVelocity);
+    }
 
+    /**
+     * Record telemetry for the flywheel so we can observe actual
+     * and desired flywheel velocities
+     */
+    private void recordFlywheelTelemetry() {
         // Record telemetry for the current Flywheel velocity and the desired velocity
         telemetry.addData("flywheelVelocity", flywheel.getVelocity());
         telemetry.addData("desiredFlywheelVelocity", desiredFlywheelVelocity);
@@ -108,7 +111,7 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         initializeSubsystems();
 
         waitForStart();
@@ -116,6 +119,7 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
         while (opModeIsActive()) {
             processGamepadInputForCollectionSubsystem();
             processGamepadInputForFlywheel();
+            recordFlywheelTelemetry();
         }
     }
 }
