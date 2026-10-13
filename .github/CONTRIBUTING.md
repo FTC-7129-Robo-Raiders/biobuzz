@@ -39,3 +39,9 @@ Before submitting your PR, verify the following:
 - [ ] Your branch has been pushed to GitHub.
 - [ ] The base branch for the PR is `main`.
 - [ ] Your PR includes a clear description of the changes.
+
+## 4. Another Team Member Reviews and Merges the Code
+
+Another team member should then review the PR. If they approve, they can either approve in the
+Github UI and let you know to merge it. Or alternatively, if they approve, they can merge it
+themselves. If they have questions/suggestions, they can make those directly in the PR.
