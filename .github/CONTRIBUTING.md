@@ -45,3 +45,8 @@ Before submitting your PR, verify the following:
 Another team member should then review the PR. If they approve, they can either approve in the
 Github UI and let you know to merge it. Or alternatively, if they approve, they can merge it
 themselves. If they have questions/suggestions, they can make those directly in the PR.
+
+_NOTE: PR approval is not actually required; the person who submits a change can merge their
+own PR. However, it's best practice to have someone else review your code so they can
+add feedback if they see something worth changing. They can also learn new things by reviewing your
+code_ 
