@@ -35,8 +35,8 @@ unless you have reason to put a PR into another target branch.**
 
 Before submitting your PR, verify the following:
 
-- [ ] Your changes are on your own branch.
-- [ ] Your branch has been pushed to GitHub.
+- [ ] Your changes are on the desired non-main branch.
+- [ ] Changes from the branch have been pushed to GitHub.
 - [ ] The base branch for the PR is `main`.
 - [ ] Your PR includes a clear description of the changes.
 
