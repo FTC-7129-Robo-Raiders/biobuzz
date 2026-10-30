@@ -2,9 +2,17 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.internal.files.DataLogger;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
 
 @TeleOp(name = "Dual Horizontal Flywheel Tester")
 public class DualHorizontalFlywheelTester extends LinearOpMode {
@@ -12,26 +20,57 @@ public class DualHorizontalFlywheelTester extends LinearOpMode {
     // Track the desired velocity of the flywheel; this allows incrementing/decrementing
     // the velocity and also measuring the difference between actual and desired velocity
     private double desiredFlywheelVelocity;
+    // Logging captured in CSV for more in-depth analysis
+    private DataLogger dataLogger;
+    private final ElapsedTime elapsedRuntime = new ElapsedTime();
+    private final String[] telemetryFields = {
+        "desiredFlywheelVelocity",
+        "leftFlywheelVelocity",
+        "leftFlywheelTotalTicks",
+        "rightFlywheelVelocity",
+        "rightFlywheelTotalTicks",
+    };
     // Used to avoid incrementing/decrementing too quickly when multiple up/down keypresses
     // are read within a loop
     private final ElapsedTime timeSinceVelocityChange = new ElapsedTime();
     // Baseline velocity in ticks-per-second used when starting up the flywheels or resetting them to baseline
-    private static final double baselineVelocity = 1500;
+    private static final double baselineVelocity = 2200;
     // How much to bump the velocity up or down when changing speeds
     private static final double velocityAdjustmentAmount = 50;
+
+    /**
+     * Initialize the data logger so it can capture telemetry over time
+     */
+    private void initializeDataLogger() {
+        try {
+            dataLogger = new DataLogger("dual_flywheel_test_log");
+            String[] csvHeader = ArrayUtils.addFirst(telemetryFields, "runtimeInMillis");
+            dataLogger.addHeaderLine(csvHeader);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize the Data Logger", e);
+        }
+    }
+
+    private DcMotorEx initializeFlywheel(String deviceName) {
+        DcMotorEx flywheel = hardwareMap.get(DcMotorEx.class, deviceName);
+        flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        return flywheel;
+    }
 
     /**
      * Initialize our subsystems; this should be called once at robot startup
      */
     private void initializeSubsystems() {
-        leftFlywheel = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
-        rightFlywheel = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
+        // Initialize hardware mappings
+        leftFlywheel = initializeFlywheel("leftFlywheel");
+        rightFlywheel = initializeFlywheel("rightFlywheel");
         desiredFlywheelVelocity = 0;
-        // A positive velocity sends the motor counter-clockwise; the motors should spin in opposite
-        // directions of each other to propel the ball forwards. Set the right motor accordingly
+        // A positive velocity sends the motor clockwise; the motors should spin in opposite
+        // directions of each other to propel the ball forwards. Set the left motor accordingly
         // to reverse its direction
         // Left: Counter-clockwise, Right: clockwise
-        rightFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
@@ -87,20 +126,44 @@ public class DualHorizontalFlywheelTester extends LinearOpMode {
         rightFlywheel.setVelocity(desiredFlywheelVelocity);
     }
 
+    private void addTelemetryDataToDriverStation(Map<String, Object> telemetryData) {
+        telemetryData.forEach((key, value) -> telemetry.addData(key, value));
+    }
+
+    private void addTelemetryDataToDatalog(Map<String, Object> telemetryData) {
+        Object[] dataLine = Arrays.stream(telemetryFields).map(telemetryData::get).toArray();
+        dataLine = ArrayUtils.addFirst(dataLine, elapsedRuntime.milliseconds());
+        try {
+            dataLogger.addDataLine(dataLine);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to send data to the Data Logger", e);
+        }
+    }
+
     /**
      * Record telemetry for the flywheel so we can observe actual
      * and desired flywheel velocities
      */
     private void recordFlywheelTelemetry() {
+        int leftFlywheelTotalTicks = leftFlywheel.getCurrentPosition();
+        int rightFlywheelTotalTicks = rightFlywheel.getCurrentPosition();
         // Record telemetry for the current Flywheel velocity and the desired velocity
-        telemetry.addData("leftFlywheelVelocity", leftFlywheel.getVelocity());
-        telemetry.addData("rightFlywheelVelocity", rightFlywheel.getVelocity());
-        telemetry.addData("desiredFlywheelVelocity", desiredFlywheelVelocity);
+        Map<String, Object> telemetryData = Map.of(
+            "leftFlywheelVelocity", leftFlywheel.getVelocity(),
+            "leftFlywheelTotalTicks", leftFlywheelTotalTicks,
+            "rightFlywheelVelocity", rightFlywheel.getVelocity(),
+            "rightFlywheelTotalTicks", rightFlywheelTotalTicks,
+            "desiredFlywheelVelocity", desiredFlywheelVelocity
+        );
+        addTelemetryDataToDriverStation(telemetryData);
         telemetry.update();
+
+        addTelemetryDataToDatalog(telemetryData);
     }
 
     @Override
     public void runOpMode() {
+        initializeDataLogger();
         initializeSubsystems();
 
         waitForStart();
@@ -109,5 +172,7 @@ public class DualHorizontalFlywheelTester extends LinearOpMode {
             processGamepadInputForFlywheel();
             recordFlywheelTelemetry();
         }
+
+        dataLogger.close();
     }
 }
