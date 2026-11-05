@@ -25,8 +25,8 @@ public class AngleCalculatorTest {
             "270, 180, 90",
             "0, 180, 180",
     })
-    void testGetDegreeAngleToCloseGap(double targetAngle, double actualAngle, double expected) {
-        double result = AngleCalculator.getDegreeAngleToCloseGap(targetAngle, actualAngle);
+    void testGetShortestAngleBetween(double targetAngle, double actualAngle, double expected) {
+        double result = AngleCalculator.getShortestAngleBetween(targetAngle, actualAngle);
         // Add a little tolerance for floating-point precision loss
         double tolerance = 0.001;
         assertThat(expected, closeTo(result, tolerance));

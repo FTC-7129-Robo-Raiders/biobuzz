@@ -8,57 +8,69 @@ import org.firstinspires.ftc.teamcode.calculators.AngleCalculator;
 
 // Single use per object
 public class TurnPID {
-    private double kP, kI, kD;
-    private ElapsedTime timer = new ElapsedTime();
-    private double targetAngle;
+    private final double targetAngle;
+    private final double kP, kI, kD;
+    private final ElapsedTime timer = new ElapsedTime();
+    // Last error and time are used to determine error slope; this is useful
+    // to understand how much correction the PID controller is supplying at a given
+    // point-in-time
     private double lastError = 0;
-    private double accumulatedError = 0;
-    private double lastTime = -1;
+    private double lastTimeInSeconds = 0;
     private double lastSlope = 0;
+    // Integral is used to measure accumulated error values; this is multiplied by kI
+    // to become the "I" portion of this PID controller
     private double integral = 0;
-    private double derivative = 0;
-    private double dT = 0;
-    private double masxPower = 0;
-    public TurnPID(double target, double p, double i, double d) {
-        kP = p;
-        kI = i;
-        kD = d;
-        targetAngle = target;
+
+    public TurnPID(double targetAngle, double kP, double kI, double kD) {
+        this.targetAngle = targetAngle;
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
+    }
+
+    /**
+     * Calculate the derivative between the current error and the previous error. The derivative
+     * at any point-in-time is just the slope where the y-axis is the difference between current and previous error.
+     * The x-axis is the amount of seconds since the previous measurement. This method has a safeguard to
+     * return a derivative of zero if no time has passed between measurements or if this is our
+     * first measurement
+     */
+    private double calculateDerivative(
+            double currentError,
+            double previousError,
+            double secondsBetweenMeasurements
+    ) {
+        return lastTimeInSeconds == 0 || secondsBetweenMeasurements == 0 ?
+                0 :
+                (currentError - previousError) / secondsBetweenMeasurements;
     }
 
     public double update(double currentAngle) {
-        double error = AngleCalculator.getDegreeAngleToCloseGap(targetAngle, currentAngle);
+        double currentTimeInSeconds = timer.seconds();
+        double secondsSincePreviousMeasurement = currentTimeInSeconds - lastTimeInSeconds;
+        double error = AngleCalculator.getShortestAngleBetween(targetAngle, currentAngle);
+        // Determine the aggregated integral adjustment and the derivative between the current and previous error
+        integral += error * secondsSincePreviousMeasurement;
+        double derivative = calculateDerivative(error, lastError, secondsSincePreviousMeasurement);
 
-        // P
-        dT = (timer.milliseconds() - lastTime);
-        integral = integral + error * dT;
-        derivative = ((error - lastError) / dT);
+        // TODO - we might consider using raw voltage instead of the -1 to 1 power scale. This would
+        //  avoid our robot slowing down as our battery drains. The -1 to 1 power scale is directly
+        //  tied to the total amount of voltage available to the robot.
+        // Run the PID algorithm to determine how much power to give the motor
+        // This is then constrained by max power to avoid turning too rapidly
         double motorPower = (kP * error + kI * integral + kD * derivative);
-        motorPower = clamp(motorPower, -.35, .35);
-        //I
-        accumulatedError = Math.signum(error);
-        accumulatedError += error;
-        if (Math.abs(error) < 2) {
-            accumulatedError = 0;
-        }
+        double maxPower = .35;
+        motorPower = clamp(motorPower, -maxPower, maxPower);
 
-        // D
-        double slope = 0;
-        if (lastTime > 0) {
-            slope = (error - lastError) / (timer.milliseconds() - lastTime);
-        }
-
-        lastSlope = slope;
+        // Set the 'last' values as we now have new measurements
+        lastSlope = derivative;
         lastError = error;
-        lastTime = timer.milliseconds();
+        lastTimeInSeconds = currentTimeInSeconds;
 
-        //     double motorPower = 0.1 Math.signum(error)
-        //     + 0.9 Math.tanh(kP * error + kI * accumulatedError - kD * slope);
         return motorPower;
     }
 
     public double getLastSlope() {
         return lastSlope;
     }
-
 }

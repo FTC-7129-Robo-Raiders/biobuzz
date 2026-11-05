@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+// TODO - we should consider combining this with R1Auto. Right now, it is a little confusing
+//  having both classes as they serve a very similar purpose
 public class AutoRobot1 {
     public DcMotor leftForward = null;
     public DcMotor rightForward = null;

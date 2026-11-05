@@ -10,7 +10,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.calculators.AngleCalculator;
 
+// TODO - we should consider combining this with AutoRobot1. Right now, it is a little confusing
+//  having both classes as they serve a very similar purpose
 public class R1Auto {
     BNO055IMU imu;
 
@@ -217,40 +220,106 @@ public class R1Auto {
 
 
     public double getAbsoluteAngle() {
-
         return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
-    public void turnToPID ( double targetAngle, double timeoutS){
+
+    /**
+     * Record useful telemetry to observe how the PID controller is applying motor correction
+     * to achieve the desired angle
+     */
+    private void recordPIDTelemetry(double consecutiveTimesWithinDegreeThreshold, double currentAngle, double targetAngle, double pidSlope, double motorPower) {
+        opMode.telemetry.addData("consecutiveTimesWithinDegreeThreshold", consecutiveTimesWithinDegreeThreshold);
+        opMode.telemetry.addData("currentAngle", currentAngle);
+        opMode.telemetry.addData("targetAngle", targetAngle);
+        opMode.telemetry.addData("pidCorrectionSlope", pidSlope);
+        opMode.telemetry.addData("motorPower", motorPower);
+        opMode.telemetry.update();
+    }
+
+    /**
+     * Set all drive motors to run without the encoder; the encoders are still used
+     * for collecting measurements, but the PID controller is used for actual motor speed
+     * correction.
+     */
+    private void setMotorsToRunWithoutEncoder() {
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    /**
+     * Set the robot's motor power to the set left and right motor powers. This is useful
+     * for turning; to turn the front/back left motors are set to one power and the
+     * front/back right motors are set to another power
+     */
+    private void setMotorPowerPerSide(double leftMotorPower, double rightMotorPower) {
+        leftDrive.setPower(leftMotorPower);
+        leftBackDrive.setPower(leftMotorPower);
+        rightDrive.setPower(rightMotorPower);
+        rightBackDrive.setPower(rightMotorPower);
+    }
+
+    /**
+     * Determine if the robot is stabilizing the target angle. To do so, compare the
+     * error to the acceptable error threshold. Additionally, compare the error slope to the acceptable
+     * error slope. The slope comparison ensures the robot is actually stabilizing and not just oscillating
+     * through and past the target angle
+     * @param error The error between the target angle and the actual angle
+     * @param acceptableError The acceptable error between the target angle and the actual angle. This should
+     *                        be set to something above zero to avoid constant oscillation, but not so high that
+     *                        the robot isn't considerably off the desired heading. This should use the same unit
+     *                        as the error
+     * @param errorSlope The slope of the error. This is generally measured in degrees per second
+     * @param acceptableErrorSlope The acceptable slope of the error. This should use the same unit as the errorSlope
+     * @return Is the robot stabilizing at the target angle?
+     */
+    @SuppressWarnings("SameParameterValue")
+    private boolean isStabilizingAtTargetAngle(double error, double acceptableError, double errorSlope, double acceptableErrorSlope) {
+        // NOTE: The "SuppressWarnings" block above is in place because right now, we always use an
+        // acceptable error of 1 degree and an acceptable error slope of 10 degrees per second.
+        // However, leaving this parameterized to support more easily changing those values later
+        return Math.abs(error) < acceptableError && Math.abs(errorSlope) < acceptableErrorSlope;
+    }
+
+    /**
+     * Turn the robot to the given target angle
+     * @param targetAngle The desired angle the robot should turn to
+     * @param stabilizationTimeoutInSeconds How long to wait (in seconds) before abandoning the turn.
+     */
+    public void turnToPID(double targetAngle, double stabilizationTimeoutInSeconds) {
+        // TODO; consider setting the motor encoder modes at the OpMode layer instead of within this function
+        //  It might be unnecessary to set the motor mode every time we call turnToPID
+        setMotorsToRunWithoutEncoder();
 
         TurnPID pid = new TurnPID(targetAngle, 0.005, 0.00000000, 0.0000000000000);
         //theOpMode.telemetry.setMsTransmissionInterval(50);
-        double degreeCount = 0;
+        double consecutiveStableMeasurements = 0;
         runtime.reset();
-        // Checking lastSlope to make sure that it's not oscillating when it quits
-        while ((Math.abs(targetAngle - getAbsoluteAngle()) > 1 || pid.getLastSlope() > 1.25 || degreeCount < 4) && runtime.seconds() < timeoutS) {
-            if (Math.abs(targetAngle - getAbsoluteAngle()) < 1) {
-                degreeCount += 1;
+
+        // Run the while loop until either the timeout is hit or the robot has stabilized at the target angle
+        while (runtime.seconds() < stabilizationTimeoutInSeconds) {
+            double currentAngle = getAbsoluteAngle();
+            double error = AngleCalculator.getShortestAngleBetween(targetAngle, currentAngle);
+            double motorSpeed = pid.update(currentAngle);
+            double errorSlope = pid.getLastSlope();
+
+            // If the robot is within the stable threshold, increase the consecutive stable measurement count
+            // Otherwise, reset the counter
+            if (isStabilizingAtTargetAngle(error, 1, errorSlope, 10)) {
+                consecutiveStableMeasurements++;
+            } else {
+                consecutiveStableMeasurements = 0;
             }
-            double motorSpeed = pid.update(getAbsoluteAngle());
-            leftDrive.setPower(motorSpeed);
-            rightDrive.setPower(-motorSpeed);
-            leftBackDrive.setPower(motorSpeed);
-            rightBackDrive.setPower(-motorSpeed);
-            opMode.telemetry.addData("degreeCount", degreeCount);
-            opMode.telemetry.addData("degreeCount", degreeCount);
-            opMode.telemetry.addData("Current Angle", getAbsoluteAngle());
-            opMode.telemetry.addData("Target Angle", targetAngle);
-            opMode.telemetry.addData("Slope", pid.getLastSlope());
-            opMode.telemetry.addData("Power", motorSpeed);
-            opMode.telemetry.update();
+            // Has the robot entered a stable state? If so, exit the loop
+            if (consecutiveStableMeasurements >= 4) {
+                break;
+            }
+            // If the robot is not in a stable state, adjust the motor speed to turn the robot
+            setMotorPowerPerSide(motorSpeed, -motorSpeed);
         }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-        leftBackDrive.setPower(0);
-        rightBackDrive.setPower(0);
+
+        // Stop the turn
+        setMotorPowerPerSide(0, 0);
     }
 }
