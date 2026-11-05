@@ -292,7 +292,7 @@ public class R1Auto {
         //  It might be unnecessary to set the motor mode every time we call turnToPID
         setMotorsToRunWithoutEncoder();
 
-        TurnPID pid = new TurnPID(targetAngle, 0.005, 0.00000000, 0.0000000000000);
+        TurnPID pid = new TurnPID(targetAngle, 0.004, 0.00000000, 0.002);
         //theOpMode.telemetry.setMsTransmissionInterval(50);
         double consecutiveStableMeasurements = 0;
         runtime.reset();
