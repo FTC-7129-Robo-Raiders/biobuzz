@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 @TeleOp(name = "FlywheelTestBiobuzz")
 public class FlywheelTestBiobuzz extends LinearOpMode {
     private DcMotorEx flywheel = null;
-    private DcMotor bottomCollection = null;
-    private DcMotor topCollection = null;
+    //private DcMotor bottomCollection = null;
+    //private DcMotor topCollection = null;
 
     private double desiredFlywheelVelocity;
 
     public void processGamepadInput() {
-        if (gamepad1.x) {
+      /*  if (gamepad1.x) {
             bottomCollection.setPower(-1);
             topCollection.setPower(-1);
         } else if (gamepad1.left_bumper) {
@@ -23,7 +23,7 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
         } else {
             bottomCollection.setPower(0);
             topCollection.setPower(0);
-        }
+        } */
 
         if (gamepad1.right_bumper) {
             desiredFlywheelVelocity = -1500;
@@ -50,8 +50,8 @@ public class FlywheelTestBiobuzz extends LinearOpMode {
     @Override
     public void runOpMode() {
         flywheel = hardwareMap.get(DcMotorEx.class, "Josh");
-        bottomCollection = hardwareMap.get(DcMotor.class, "BottomCollection");
-        topCollection = hardwareMap.get(DcMotor.class, "TopCollection");
+       // bottomCollection = hardwareMap.get(DcMotor.class, "BottomCollection");
+        //topCollection = hardwareMap.get(DcMotor.class, "TopCollection");
         waitForStart();
         while (opModeIsActive()) {
             processGamepadInput();
