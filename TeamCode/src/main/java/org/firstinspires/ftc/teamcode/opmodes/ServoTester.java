@@ -57,14 +57,15 @@ public class ServoTester extends LinearOpMode {
      * dpad down: Decrease the position of the servo
      */
     private void processGamepadInputForServo() {
+        double servoPositionAdjustmentStep = 0.5;
         if (gamepad1.b) {
             desiredServoPosition = 0;
         } else if (gamepad1.dpad_up && servoChangeAllowed()) {
-            adjustDesiredPosition(-50);
+            adjustDesiredPosition(-servoPositionAdjustmentStep);
         } else if (gamepad1.dpad_down && servoChangeAllowed()) {
             // Note: Positive velocities actually are spinning the flywheel slower since we
             // start at a negative baseline
-            adjustDesiredPosition(50);
+            adjustDesiredPosition(servoPositionAdjustmentStep);
         }
         servo.setPosition(desiredServoPosition);
     }
