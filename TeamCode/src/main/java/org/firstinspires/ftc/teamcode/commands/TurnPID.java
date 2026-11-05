@@ -4,6 +4,8 @@ import static androidx.core.math.MathUtils.clamp;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.calculators.AngleCalculator;
+
 // Single use per object
 public class TurnPID {
     private double kP, kI, kD;
@@ -23,16 +25,11 @@ public class TurnPID {
         kD = d;
         targetAngle = target;
     }
+
     public double update(double currentAngle) {
+        double error = AngleCalculator.getDegreeAngleToCloseGap(targetAngle, currentAngle);
 
         // P
-        double error = targetAngle - currentAngle;
-        error %= 360;
-        error += 360;
-        error %= 360;
-        if (error > 180) {
-            error -= 360;
-        }
         dT = (timer.milliseconds() - lastTime);
         integral = integral + error * dT;
         derivative = ((error - lastError) / dT);
@@ -44,8 +41,6 @@ public class TurnPID {
         if (Math.abs(error) < 2) {
             accumulatedError = 0;
         }
-
-
 
         // D
         double slope = 0;
