@@ -6,10 +6,10 @@ public class AngleCalculator {
      * This is useful for use-cases like when your robot is facing
      * one direction, and you want it to face another direction; this method can be used to
      * determine how far the robot should turn
-     * @param startingAngle The target angle being aimed for (in degrees)
-     * @param endAngle The current angle (in degrees)
-     * @return The shortest angle to close the gap. This result should be somewhere between -180
-     * to 180 degrees
+     * @param startingAngle The starting angle (in degrees)
+     * @param endAngle The end angle (in degrees)
+     * @return The shortest angle between the starting angle and the end angle.
+     * This result should be somewhere between -180 to 180 degrees
      */
     public static double getShortestAngleBetween(double startingAngle, double endAngle) {
         double angleDifference = endAngle - startingAngle;
