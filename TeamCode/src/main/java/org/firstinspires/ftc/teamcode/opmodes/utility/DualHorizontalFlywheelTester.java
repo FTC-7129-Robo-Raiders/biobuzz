@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.utility;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
-@TeleOp(name = "Dual Horizontal Flywheel Tester")
+@TeleOp(name = "Dual Horizontal Flywheel Tester", group = "Testing")
 public class DualHorizontalFlywheelTester extends LinearOpMode {
     private DcMotorEx leftFlywheel, rightFlywheel;
     // Track the desired velocity of the flywheel; this allows incrementing/decrementing
