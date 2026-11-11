@@ -239,7 +239,7 @@ public class Drivetrain {
      * Given gamepad inputs, drive using those inputs with a field-oriented control
      * scheme
      */
-    public void driveFieldOrientedTeleop() {
+    public void processGamepadInputForFieldOrientedDrive() {
         // Stop immediately if the OpMode is no longer active
         if (!opMode.opModeIsActive()) return;
 

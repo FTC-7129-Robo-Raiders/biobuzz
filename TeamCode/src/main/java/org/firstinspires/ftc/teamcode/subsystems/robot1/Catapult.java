@@ -66,4 +66,15 @@ public class Catapult {
         stop();
         recordLaunchedTelemetry();
     }
+
+    /**
+     * Process gamepad input to control the catapult system
+     */
+    public void processGamepadInput() {
+        if (opMode.gamepad1.y) {
+            launch();
+        } else {
+            stop();
+        }
+    }
 }

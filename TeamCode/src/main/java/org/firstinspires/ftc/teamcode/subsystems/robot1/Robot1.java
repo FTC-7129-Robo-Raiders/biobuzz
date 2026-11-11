@@ -13,7 +13,7 @@ public class Robot1 {
     public Robot1(LinearOpMode opMode) {
         this.imu = new ControlHubIMU();
         this.drivetrain = new Drivetrain(opMode, imu);
-        this.collection = new Collection();
+        this.collection = new Collection(opMode);
         this.catapult = new Catapult(opMode);
     }
 

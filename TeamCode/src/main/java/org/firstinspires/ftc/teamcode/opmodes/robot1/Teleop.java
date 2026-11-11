@@ -21,24 +21,9 @@ public class Teleop extends LinearOpMode {
         telemetry.update();
 
         while (opModeIsActive()) {
-            if (gamepad1.y) {
-                robot1.catapult.launch();
-            } else {
-                robot1.catapult.stop();
-            }
-
-            if(gamepad1.left_bumper) {
-                robot1.collection.collect();
-            } else {
-                robot1.collection.stop();
-            }
-            if (gamepad1.right_bumper) {
-                robot1.collection.eject();
-            } else {
-                robot1.collection.stop();
-            }
-
-            robot1.drivetrain.driveFieldOrientedTeleop();
+            robot1.catapult.processGamepadInput();
+            robot1.collection.processGamepadInput();
+            robot1.drivetrain.processGamepadInputForFieldOrientedDrive();
 
             telemetry.addData("botHeading", robot1.imu.getRobotYawInDegrees());
             telemetry.update();
