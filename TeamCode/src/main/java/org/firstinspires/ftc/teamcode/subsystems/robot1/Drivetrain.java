@@ -44,7 +44,7 @@ public class Drivetrain {
         frontRightMotor = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
         backRightMotor = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
 
-        // TODO - figure out if this makes sense for all drive styles or if this needs to be conditional
+        // TODO - test this on robot1 since it is gear-driven; the direction of each motor may need to be tweaked
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
