@@ -39,10 +39,10 @@ public class Drivetrain {
     }
 
     public void init(HardwareMap hardwareMap) {
-        frontLeftMotor = getInitializedDriveMotor(hardwareMap, "leftFrontDrive", DcMotorSimple.Direction.FORWARD);
-        backLeftMotor = getInitializedDriveMotor(hardwareMap, "leftBackDrive", DcMotorSimple.Direction.FORWARD);
-        frontRightMotor = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
-        backRightMotor = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor = getInitializedDriveMotor(hardwareMap, "frontLeftMotor", DcMotorSimple.Direction.FORWARD);
+        backLeftMotor = getInitializedDriveMotor(hardwareMap, "backLeftMotor", DcMotorSimple.Direction.FORWARD);
+        frontRightMotor = getInitializedDriveMotor(hardwareMap, "frontRightMotor", DcMotorSimple.Direction.REVERSE);
+        backRightMotor = getInitializedDriveMotor(hardwareMap, "backRightMotor", DcMotorSimple.Direction.REVERSE);
 
         // TODO - test this on robot1 since it is gear-driven; the direction of each motor may need to be tweaked
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -244,7 +244,7 @@ public class Drivetrain {
         if (!opMode.opModeIsActive()) return;
 
         // Use the 'options' button to reset the zero angle on the robot
-        if (opMode.gamepad1.options) {
+        if (opMode.gamepad1.ps) {
             imu.resetYaw();
         }
 

@@ -13,10 +13,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class MecanumFieldCentricDriveTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor"); //0
+        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor"); // 1
+        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor"); // 2
+        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor"); // 3
 
         // Reverse the left side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
