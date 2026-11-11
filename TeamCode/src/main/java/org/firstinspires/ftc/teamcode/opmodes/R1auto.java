@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,6 +25,8 @@ public class R1auto {
     public DcMotor rightBackDrive = null;
     public DcMotor collect = null;
     public DcMotor launch = null;
+
+    public Servo dump;
 
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -53,6 +56,8 @@ public class R1auto {
         collect = hardwareMap.get(DcMotor.class, "collect1");
 
         launch = hardwareMap.get(DcMotor.class, "launch");
+
+        dump = hardwareMap.get(Servo.class, "dump");
 
 
         collect.setDirection(DcMotor.Direction.FORWARD);
