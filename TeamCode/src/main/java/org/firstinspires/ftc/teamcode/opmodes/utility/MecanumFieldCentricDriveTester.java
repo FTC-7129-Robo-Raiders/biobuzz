@@ -30,9 +30,11 @@ public class MecanumFieldCentricDriveTester extends LinearOpMode {
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+        RevHubOrientationOnRobot controlHubOrientation = new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+        );
+        IMU.Parameters parameters = new IMU.Parameters(controlHubOrientation);
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
