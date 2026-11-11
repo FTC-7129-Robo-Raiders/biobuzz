@@ -13,29 +13,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class MecanumFieldCentricDriveTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        // Declare our motors
-        // Make sure your ID's match your configuration
         DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
 
-        // Reverse the right side motors. This may be wrong for your setup.
+        // Reverse the left side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
-        // reverse the left side instead.
-        // See the note about this earlier on this page.
+        // reverse the right side instead.
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Retrieve the IMU from the hardware map
+        // Initialize the IMU; adjust the orientation parameters to match your robot
         IMU imu = hardwareMap.get(IMU.class, "imu");
-        // Adjust the orientation parameters to match your robot
         RevHubOrientationOnRobot controlHubOrientation = new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT
         );
         IMU.Parameters parameters = new IMU.Parameters(controlHubOrientation);
-        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
         waitForStart();
@@ -43,13 +38,12 @@ public class MecanumFieldCentricDriveTester extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            // The Y stick value is reversed so negate it here
+            double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            // This button choice was made so that it is hard to hit on accident,
-            // it can be freely changed based on preference.
-            // The equivalent button is start on Xbox-style controllers.
+            // Use the 'options' button to reset the zero angle on the robot
             if (gamepad1.options) {
                 imu.resetYaw();
             }
@@ -60,7 +54,10 @@ public class MecanumFieldCentricDriveTester extends LinearOpMode {
             double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
             double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
+            // Counteract imperfect strafing; this provides a little more power
+            // to our X axis during strafing due to the way mecanum wheels don't
+            // perfectly transmit power evenly across the x/y planes
+            rotX = rotX * 1.1;
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
@@ -71,6 +68,8 @@ public class MecanumFieldCentricDriveTester extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
+            // The speed magnifier allows throttling the robot so that
+            // it doesn't move too fast for the human operator
             double speedMagnifier = 0.8;
             frontLeftMotor.setPower(frontLeftPower * speedMagnifier);
             backLeftMotor.setPower(backLeftPower * speedMagnifier);

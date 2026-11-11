@@ -13,7 +13,7 @@ public class Drivetrain {
     private final LinearOpMode opMode;
     private final ControlHubIMU imu;
 
-    public DcMotor leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive;
+    public DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -39,11 +39,14 @@ public class Drivetrain {
     }
 
     public void init(HardwareMap hardwareMap) {
-        // TODO - consider consistent naming for motors (e.g. leftFrontDrive & leftBackDrive)
-        leftFrontDrive = getInitializedDriveMotor(hardwareMap, "left_drive", DcMotorSimple.Direction.FORWARD);
-        leftBackDrive = getInitializedDriveMotor(hardwareMap, "leftBackDrive", DcMotorSimple.Direction.FORWARD);
-        rightFrontDrive = getInitializedDriveMotor(hardwareMap, "right_drive", DcMotorSimple.Direction.REVERSE);
-        rightBackDrive = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor = getInitializedDriveMotor(hardwareMap, "leftFrontDrive", DcMotorSimple.Direction.FORWARD);
+        backLeftMotor = getInitializedDriveMotor(hardwareMap, "leftBackDrive", DcMotorSimple.Direction.FORWARD);
+        frontRightMotor = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
+        backRightMotor = getInitializedDriveMotor(hardwareMap, "rightBackDrive", DcMotorSimple.Direction.REVERSE);
+
+        // TODO - figure out if this makes sense for all drive styles or if this needs to be conditional
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
@@ -56,9 +59,9 @@ public class Drivetrain {
 
     private void recordTelemetryForFrontWheelActualAndTargets(double leftFrontTarget, double rightFrontTarget) {
         opMode.telemetry.addData("leftFrontTargetTicks", leftFrontTarget);
-        opMode.telemetry.addData("leftFrontTicks", leftFrontDrive.getCurrentPosition());
+        opMode.telemetry.addData("leftFrontTicks", frontLeftMotor.getCurrentPosition());
         opMode.telemetry.addData("rightFrontTargetTicks", rightFrontTarget);
-        opMode.telemetry.addData("rightFrontTicks", rightFrontDrive.getCurrentPosition());
+        opMode.telemetry.addData("rightFrontTicks", frontRightMotor.getCurrentPosition());
         opMode.telemetry.update();
     }
 
@@ -69,10 +72,10 @@ public class Drivetrain {
      * @return True if the motors are still working; false if they are not or the timeout has been exceeded
      */
     private boolean isDrivingToTargetInches(double runtimeInSeconds, double timeoutInSeconds) {
-        boolean anyWheelsBusy = leftFrontDrive.isBusy() ||
-                rightFrontDrive.isBusy() ||
-                leftBackDrive.isBusy() ||
-                rightBackDrive.isBusy();
+        boolean anyWheelsBusy = frontLeftMotor.isBusy() ||
+                frontRightMotor.isBusy() ||
+                backLeftMotor.isBusy() ||
+                backRightMotor.isBusy();
         return runtimeInSeconds < timeoutInSeconds && anyWheelsBusy;
     }
 
@@ -82,10 +85,10 @@ public class Drivetrain {
      * correction.
      */
     private void setMotorsToRunMode(DcMotor.RunMode runMode) {
-        leftFrontDrive.setMode(runMode);
-        rightFrontDrive.setMode(runMode);
-        leftBackDrive.setMode(runMode);
-        rightBackDrive.setMode(runMode);
+        frontLeftMotor.setMode(runMode);
+        frontRightMotor.setMode(runMode);
+        backLeftMotor.setMode(runMode);
+        backRightMotor.setMode(runMode);
     }
 
     /**
@@ -93,10 +96,10 @@ public class Drivetrain {
      * power each motor as desired
      */
     public void setMotorPowers(double leftFrontMotorPower, double leftBackMotorPower, double rightFrontMotorPower, double rightBackMotorPower) {
-        leftFrontDrive.setPower(leftFrontMotorPower);
-        leftBackDrive.setPower(leftBackMotorPower);
-        rightFrontDrive.setPower(rightFrontMotorPower);
-        rightBackDrive.setPower(rightBackMotorPower);
+        frontLeftMotor.setPower(leftFrontMotorPower);
+        backLeftMotor.setPower(leftBackMotorPower);
+        frontRightMotor.setPower(rightFrontMotorPower);
+        backRightMotor.setPower(rightBackMotorPower);
     }
 
     /**
@@ -109,10 +112,10 @@ public class Drivetrain {
     }
 
     private void setMotorTargetPositions(int leftFrontTarget, int leftBackTarget, int rightFrontTarget, int rightBackTarget) {
-        leftFrontDrive.setTargetPosition(leftFrontTarget);
-        leftBackDrive.setTargetPosition(leftBackTarget);
-        rightFrontDrive.setTargetPosition(rightFrontTarget);
-        rightBackDrive.setTargetPosition(rightBackTarget);
+        frontLeftMotor.setTargetPosition(leftFrontTarget);
+        backLeftMotor.setTargetPosition(leftBackTarget);
+        frontRightMotor.setTargetPosition(rightFrontTarget);
+        backRightMotor.setTargetPosition(rightBackTarget);
     }
 
     /**
@@ -130,10 +133,10 @@ public class Drivetrain {
                             double rightInches,
                             double timeoutInSeconds) {
         // Determine new target position, and pass to motor controller
-        int leftFrontTarget = getMotorPositionAfterAdvancingInches(leftFrontDrive, leftInches);
-        int leftBackTarget = getMotorPositionAfterAdvancingInches(leftBackDrive, leftInches);
-        int rightFrontTarget = getMotorPositionAfterAdvancingInches(rightFrontDrive, rightInches);
-        int rightBackTarget = getMotorPositionAfterAdvancingInches(rightBackDrive, rightInches);
+        int leftFrontTarget = getMotorPositionAfterAdvancingInches(frontLeftMotor, leftInches);
+        int leftBackTarget = getMotorPositionAfterAdvancingInches(backLeftMotor, leftInches);
+        int rightFrontTarget = getMotorPositionAfterAdvancingInches(frontRightMotor, rightInches);
+        int rightBackTarget = getMotorPositionAfterAdvancingInches(backRightMotor, rightInches);
         setMotorTargetPositions(leftFrontTarget, leftBackTarget, rightFrontTarget, rightBackTarget);
 
         // Turn On RUN_TO_POSITION
@@ -230,5 +233,52 @@ public class Drivetrain {
 
         // Stop the turn
         setMotorPowerPerSide(0, 0);
+    }
+
+    /**
+     * Given gamepad inputs, drive using those inputs with a field-oriented control
+     * scheme
+     */
+    public void driveFieldOrientedTeleop() {
+        // Stop immediately if the OpMode is no longer active
+        if (!opMode.opModeIsActive()) return;
+
+        // Use the 'options' button to reset the zero angle on the robot
+        if (opMode.gamepad1.options) {
+            imu.resetYaw();
+        }
+
+        // The Y stick value is reversed so negate it here
+        double y = -opMode.gamepad1.left_stick_y;
+        double x = opMode.gamepad1.left_stick_x;
+        double rx = opMode.gamepad1.right_stick_x;
+
+        double botHeading = imu.getRobotYawInRadians();
+
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+        // Counteract imperfect strafing; this provides a little more power
+        // to our X axis during strafing due to the way mecanum wheels don't
+        // perfectly transmit power evenly across the x/y planes
+        rotX = rotX * 1.1;
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        // The speed magnifier allows throttling the robot so that
+        // it doesn't move too fast for the human operator
+        double speedMagnifier = 0.8;
+        frontLeftMotor.setPower(frontLeftPower * speedMagnifier);
+        backLeftMotor.setPower(backLeftPower * speedMagnifier);
+        frontRightMotor.setPower(frontRightPower * speedMagnifier);
+        backRightMotor.setPower(backRightPower * speedMagnifier);
     }
 }

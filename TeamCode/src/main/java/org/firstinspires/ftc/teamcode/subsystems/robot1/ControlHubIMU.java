@@ -27,4 +27,20 @@ public class ControlHubIMU {
         YawPitchRollAngles robotOrientation = imu.getRobotYawPitchRollAngles();
         return robotOrientation.getYaw(AngleUnit.DEGREES);
     }
+
+    /**
+     * Get the robot's heading (yaw) in radians
+     */
+    public double getRobotYawInRadians() {
+        YawPitchRollAngles robotOrientation = imu.getRobotYawPitchRollAngles();
+        return robotOrientation.getYaw(AngleUnit.RADIANS);
+    }
+
+    /**
+     * Reset the yaw of the IMU; this is useful for resetting orientation when driving
+     * in field-oriented drive
+     */
+    public void resetYaw() {
+        imu.resetYaw();
+    }
 }
