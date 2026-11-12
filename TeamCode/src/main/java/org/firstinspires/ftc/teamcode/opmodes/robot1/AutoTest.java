@@ -22,19 +22,19 @@ public class AutoTest extends LinearOpMode {
         robot1.collection.collect();
         //robot1.drivetrain.driveInches();(.5, 2, -2, 10);
         sleep(200);
-       robot1.catapult.autoLaunch();
+        robot1.catapult.autoLaunch();
         sleep(2000);
-       robot1.dump.autoOpen();
-       robot1.dump.autoClose();
-       robot1.catapult.autoLaunch();
+        robot1.dump.autoOpen();
+        robot1.dump.autoClose();
+        robot1.catapult.autoLaunch();
         sleep(2000);
-       robot1.dump.autoOpen();
-       robot1.dump.autoClose();
-       robot1.catapult.autoLaunch();
+        robot1.dump.autoOpen();
+        robot1.dump.autoClose();
+        robot1.catapult.autoLaunch();
         sleep(2000);
-       robot1.dump.autoOpen();
-       robot1.dump.autoClose();
-       robot1.catapult.autoLaunch();
+        robot1.dump.autoOpen();
+        robot1.dump.autoClose();
+        robot1.catapult.autoLaunch();
         sleep(500);
         robot1.collection.stop();
         robot1.drivetrain.driveInches(.5, 3, 3, 10);
@@ -44,5 +44,4 @@ public class AutoTest extends LinearOpMode {
         robot1.drivetrain.driveInches(.5, 70, 70, 10);
         robot1.drivetrain.driveInches(.5, -21, 21, 10);
         robot1.drivetrain.driveInches(.5, 15, 15, 10);
-
     }}
