@@ -13,8 +13,8 @@ public class ControlHubIMU {
     public void init(HardwareMap hardwareMap) {
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot controlHubOrientation = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
         IMU.Parameters parameters = new IMU.Parameters(controlHubOrientation);
         imu.initialize(parameters);

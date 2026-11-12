@@ -39,14 +39,10 @@ public class Drivetrain {
     }
 
     public void init(HardwareMap hardwareMap) {
-        frontLeftMotor = getInitializedDriveMotor(hardwareMap, "frontLeftMotor", DcMotorSimple.Direction.FORWARD);
-        backLeftMotor = getInitializedDriveMotor(hardwareMap, "backLeftMotor", DcMotorSimple.Direction.FORWARD);
-        frontRightMotor = getInitializedDriveMotor(hardwareMap, "frontRightMotor", DcMotorSimple.Direction.REVERSE);
-        backRightMotor = getInitializedDriveMotor(hardwareMap, "backRightMotor", DcMotorSimple.Direction.REVERSE);
-
-        // TODO - test this on robot1 since it is gear-driven; the direction of each motor may need to be tweaked
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor = getInitializedDriveMotor(hardwareMap, "frontLeftMotor", DcMotorSimple.Direction.REVERSE);
+        backLeftMotor = getInitializedDriveMotor(hardwareMap, "backLeftMotor", DcMotorSimple.Direction.REVERSE);
+        frontRightMotor = getInitializedDriveMotor(hardwareMap, "frontRightMotor", DcMotorSimple.Direction.FORWARD);
+        backRightMotor = getInitializedDriveMotor(hardwareMap, "backRightMotor", DcMotorSimple.Direction.FORWARD);
     }
 
     /**
