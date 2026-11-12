@@ -10,6 +10,7 @@ public class AutoTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         Robot1 robot1 = new Robot1(this);
+        robot1.init(hardwareMap);
 
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();

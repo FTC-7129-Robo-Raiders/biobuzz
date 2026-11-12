@@ -9,12 +9,14 @@ public class Robot1 {
     public final Drivetrain drivetrain;
     public final Collection collection;
     public final Catapult catapult;
+    public final Dump dump;
 
     public Robot1(LinearOpMode opMode) {
         this.imu = new ControlHubIMU();
         this.drivetrain = new Drivetrain(opMode, imu);
         this.collection = new Collection(opMode);
         this.catapult = new Catapult(opMode);
+        this.dump = new Dump(opMode);
     }
 
     public void init(HardwareMap hardwareMap) {
@@ -22,5 +24,6 @@ public class Robot1 {
         this.drivetrain.init(hardwareMap);
         this.collection.init(hardwareMap);
         this.catapult.init(hardwareMap);
+        this.dump.init(hardwareMap);
     }
 }
