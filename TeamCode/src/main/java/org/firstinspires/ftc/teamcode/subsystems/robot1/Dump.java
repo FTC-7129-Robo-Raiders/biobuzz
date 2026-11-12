@@ -14,9 +14,6 @@ public class Dump {
     public Servo dump;
     private final ElapsedTime dumpTimer = new ElapsedTime();
 
-    private boolean autoDumpRunning;
-
-
     public Dump(LinearOpMode opMode) {
         this.opMode = opMode;
     }
@@ -33,28 +30,16 @@ public void init(HardwareMap hardwareMap){
     }
 
     public void autoOpen(){
-        if (!autoDumpRunning) {
-            autoDumpRunning = true;
-            dumpTimer.reset();
-        }
-        if (dumpTimer.seconds() < 1){
+        dumpTimer.reset();
+        while (dumpTimer.seconds() < 1) {
             open();
-        }
-        else{
-            autoDumpRunning = false;
         }
     }
 
     public void autoClose(){
-        if (!autoDumpRunning) {
-            autoDumpRunning = true;
-            dumpTimer.reset();
-        }
-        if (dumpTimer.seconds() < 1){
+        dumpTimer.reset();
+        while (dumpTimer.seconds() < 1){
             close();
-        }
-        else {
-            autoDumpRunning = false;
         }
     }
 
