@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.utility;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Flywheel Tester")
+@TeleOp(name = "Flywheel Tester", group = "Testing")
 public class FlywheelTester extends LinearOpMode {
     private DcMotorEx flywheel;
     private DcMotor bottomCollection;
