@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.utility;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,18 +12,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "Field-centric Mecanum Drive Tester", group = "Testing")
 public class MecanumFieldCentricDriveTester extends LinearOpMode {
-    @Override
-    public void runOpMode() throws InterruptedException {
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor"); //0
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor"); // 1
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor"); // 2
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor"); // 3
+    private DcMotor getInitializedDriveMotor(HardwareMap hardwareMap, String deviceName, DcMotorSimple.Direction motorDirection) {
+        DcMotor motor = hardwareMap.get(DcMotor.class, deviceName);
+        motor.setDirection(motorDirection);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        return motor;
+    }
 
-        // Reverse the left side motors. This may be wrong for your setup.
-        // If your robot moves backwards when commanded to go forwards,
-        // reverse the right side instead.
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+    @Override
+    public void runOpMode() {
+        DcMotor frontLeftMotor = getInitializedDriveMotor(hardwareMap,"frontLeftMotor", DcMotorSimple.Direction.REVERSE);
+        DcMotor backLeftMotor = getInitializedDriveMotor(hardwareMap,"backLeftMotor", DcMotorSimple.Direction.REVERSE);
+        DcMotor frontRightMotor = getInitializedDriveMotor(hardwareMap,"frontRightMotor", DcMotorSimple.Direction.FORWARD);
+        DcMotor backRightMotor = getInitializedDriveMotor(hardwareMap,"backRightMotor", DcMotorSimple.Direction.FORWARD);
 
         // Initialize the IMU; adjust the orientation parameters to match your robot
         IMU imu = hardwareMap.get(IMU.class, "imu");
