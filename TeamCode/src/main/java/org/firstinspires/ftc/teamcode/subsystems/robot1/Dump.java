@@ -12,6 +12,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Dump {
     private final LinearOpMode opMode;
     public Servo dump;
+    private final ElapsedTime dumpTimer = new ElapsedTime();
+
+    private boolean autoDumpRunning;
+
 
     public Dump(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -26,6 +30,32 @@ public void init(HardwareMap hardwareMap){
 
     public void close() {
         dump.setPosition(.2);
+    }
+
+    public void autoOpen(){
+        if (!autoDumpRunning) {
+            autoDumpRunning = true;
+            dumpTimer.reset();
+        }
+        if (dumpTimer.seconds() < 1){
+            open();
+        }
+        else{
+            autoDumpRunning = false;
+        }
+    }
+
+    public void autoClose(){
+        if (!autoDumpRunning) {
+            autoDumpRunning = true;
+            dumpTimer.reset();
+        }
+        if (dumpTimer.seconds() < 1){
+            close();
+        }
+        else {
+            autoDumpRunning = false;
+        }
     }
 
     public void processGamepadInput() {

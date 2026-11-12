@@ -23,11 +23,11 @@ public class Collection {
     }
 
     public void collect() {
-        collectionMotor.setPower(-1);
+        collectionMotor.setPower(1);
     }
 
     public void eject() {
-        collectionMotor.setPower(1);
+        collectionMotor.setPower(-1);
     }
 
     public void stop() {
@@ -41,9 +41,9 @@ public class Collection {
         // Stop immediately if the OpMode is no longer active
         if (!opMode.opModeIsActive()) return;
 
-        if (opMode.gamepad1.left_bumper) {
+        if (opMode.gamepad1.right_bumper) {
             collect();
-        } else if (opMode.gamepad1.right_bumper) {
+        } else if (opMode.gamepad1.left_bumper) {
             eject();
         } else {
             stop();
