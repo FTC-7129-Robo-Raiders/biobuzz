@@ -271,7 +271,7 @@ public class Drivetrain {
 
         // The speed magnifier allows throttling the robot so that
         // it doesn't move too fast for the human operator
-        double speedMagnifier = 0.8;
+        double speedMagnifier = 1;
         frontLeftMotor.setPower(frontLeftPower * speedMagnifier);
         backLeftMotor.setPower(backLeftPower * speedMagnifier);
         frontRightMotor.setPower(frontRightPower * speedMagnifier);

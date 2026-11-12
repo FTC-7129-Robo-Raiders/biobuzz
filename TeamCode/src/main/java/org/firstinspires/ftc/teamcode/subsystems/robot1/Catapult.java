@@ -54,7 +54,7 @@ public class Catapult {
      * Auto-launch is used to trigger the catapult to fire
      */
     public void autoLaunch(){
-        int targetPosition = catapultMotor.getCurrentPosition() + 1425;
+        int targetPosition = catapultMotor.getCurrentPosition() + 1430;
         launch();
 
         launchTimer.reset();
