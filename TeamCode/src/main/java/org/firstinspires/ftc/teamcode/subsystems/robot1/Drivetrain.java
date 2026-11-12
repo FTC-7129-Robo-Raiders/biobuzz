@@ -243,7 +243,7 @@ public class Drivetrain {
         // Stop immediately if the OpMode is no longer active
         if (!opMode.opModeIsActive()) return;
 
-        // Use the 'options' button to reset the zero angle on the robot
+        // Use the 'logitech' button to reset the zero angle on the robot
         if (opMode.gamepad1.ps) {
             imu.resetYaw();
         }
