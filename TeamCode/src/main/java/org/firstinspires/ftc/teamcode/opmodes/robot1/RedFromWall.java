@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.robot1.Robot1;
 
-@Disabled
-@Autonomous(name="Robot1: RedFromWall", group="Robot 1")
+
+@Autonomous(name="Park", group="Robot 1")
 public class RedFromWall extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -21,7 +21,8 @@ public class RedFromWall extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         waitForStart();
 
-        robot1.drivetrain.driveInches(.5, 110, 110, 10);
-        robot1.drivetrain.driveInches(.5, 68, -68, 10);
+        robot1.drivetrain.driveInches(1, 3, 3, 10);
+        robot1.drivetrain.driveInches(.5, 23, -23, 10);
+        robot1.drivetrain.driveInches(1, 4, 4, 10);
     }
 }
