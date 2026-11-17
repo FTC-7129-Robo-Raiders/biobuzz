@@ -14,5 +14,11 @@ dependencies {
     implementation 'org.firstinspires.ftc:Vision:12.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'org.apache.commons:commons-lang3:3.21.0'
+
+    // junit version locked in due to Java 8 FTC Robot Controller
+    //noinspection NewerVersionAvailable
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+    testImplementation("org.hamcrest:hamcrest-junit:2.0.0.0")
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
