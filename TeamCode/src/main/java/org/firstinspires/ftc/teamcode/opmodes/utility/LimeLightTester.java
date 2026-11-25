@@ -16,21 +16,30 @@ public class LimeLightTester extends LinearOpMode {
         limelight.pipelineSwitch(0);
     }
 
+    private void recordLimelightResultTelemetry(LLResult limelightResult) {
+        if (limelightResult == null) {
+            telemetry.addLine("Limelight result is null");
+        } else if (!limelightResult.isValid()) {
+            telemetry.addLine("Limelight result is not valid");
+        } else {
+            Pose3D botPose = limelightResult.getBotpose();
+            telemetry.addData("tx", limelightResult.getTx());
+            telemetry.addData("ty", limelightResult.getTy());
+            telemetry.addData("Bot pose", botPose.toString());
+        }
+        telemetry.update();
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         initializeSubsystems();
+
         waitForStart();
+
         limelight.start();
         while (opModeIsActive()) {
-            LLResult result = limelight.getLatestResult();
-            if (result != null) {
-                if (result.isValid()) {
-                    Pose3D botPose = result.getBotpose();
-                    telemetry.addData("tx", result.getTx());
-                    telemetry.addData("ty", result.getTy());
-                    telemetry.addData("Bot pose", botPose.toString());
-                }
-            }
+            LLResult limelightResult = limelight.getLatestResult();
+            recordLimelightResultTelemetry(limelightResult);
         }
     }
 }
